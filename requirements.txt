@@ -9,6 +9,5 @@ langgraph-checkpoint-sqlite==2.0.8
 fastapi==0.115.12
 uvicorn==0.34.0
 pydantic==2.10.3
-
-# Learning Path Agent Enhanced dependencies
 groq>=0.11.0
+langchain-groq

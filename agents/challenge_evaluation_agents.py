@@ -46,6 +46,54 @@ def create_llm(provider: str, model_name: str):
     else:
         raise ValueError(f"Unknown provider: {provider}")
 
+def clean_json_response(text: str) -> str:
+    """
+    Clean LLM-generated JSON by fixing common issues like unescaped newlines.
+
+    Args:
+        text: Raw JSON text from LLM
+
+    Returns:
+        Cleaned JSON text ready for parsing
+    """
+    import json
+
+    # Remove trailing commas before } or ]
+    text = re.sub(r',(\s*[}\]])', r'\1', text)
+
+    # Try to parse - if it works, we're done
+    try:
+        json.loads(text)
+        return text
+    except json.JSONDecodeError:
+        pass
+
+    # Fix unescaped control characters in JSON string values
+    # Strategy: Find each "key": "value" pair and escape the value
+    def fix_string_value(match):
+        key = match.group(1)
+        value = match.group(2)
+
+        # Escape control characters in the value
+        value = value.replace('\\', '\\\\')  # Escape backslashes first
+        value = value.replace('\n', '\\n')   # Escape newlines
+        value = value.replace('\r', '\\r')   # Escape carriage returns
+        value = value.replace('\t', '\\t')   # Escape tabs
+        value = value.replace('"', '\\"')    # Escape quotes
+
+        return f'"{key}": "{value}"'
+
+    # Match "key": "value" patterns where value might have unescaped newlines
+    # This handles multi-line string values
+    text = re.sub(
+        r'"([^"]+)":\s*"((?:[^"\\]|\\[^"])*?)"',
+        fix_string_value,
+        text,
+        flags=re.DOTALL
+    )
+
+    return text
+
 def log_token_usage(response, call_type: str, provider: str, model_name: str):
     """Log token usage from LLM response (only for gpt-oss-120b)."""
     if "gpt-oss-120b" not in model_name:
@@ -311,7 +359,7 @@ Generate the challenge now:"""
         print(f"      Attempting to fix common JSON issues...")
 
         try:
-            response_text = re.sub(r',(\s*[}\]])', r'\1', response_text)
+            response_text = clean_json_response(response_text)
             challenge = json.loads(response_text)
             print(f"      ✓ JSON fixed and parsed successfully")
         except json.JSONDecodeError as e2:
@@ -462,8 +510,7 @@ Evaluate the submission now:"""
         print(f"      Attempting to fix common JSON issues...")
 
         try:
-            # Remove any trailing commas before } or ]
-            response_text = re.sub(r',(\s*[}\]])', r'\1', response_text)
+            response_text = clean_json_response(response_text)
             evaluation = json.loads(response_text)
             print(f"      ✓ JSON fixed and parsed successfully")
         except json.JSONDecodeError as e2:
@@ -611,7 +658,7 @@ Generate remediation now:"""
         print(f"      Attempting to fix common JSON issues...")
 
         try:
-            response_text = re.sub(r',(\s*[}\]])', r'\1', response_text)
+            response_text = clean_json_response(response_text)
             remediation = json.loads(response_text)
             print(f"      ✓ JSON fixed and parsed successfully")
         except json.JSONDecodeError as e2:

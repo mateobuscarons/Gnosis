@@ -20,8 +20,8 @@ load_dotenv()
 
 TUTOR_LLM_CONFIG = ("groq", "moonshotai/kimi-k2-instruct-0905")
 
-
 def create_llm(provider: str, model_name: str):
+
     """Create LLM instance based on provider and model."""
     if provider == "gemini":
         return ChatGoogleGenerativeAI(
@@ -71,6 +71,58 @@ def extract_core_concepts_from_lessons(previous_lessons: List[str]) -> str:
 
     return "\n".join(all_concepts)
 
+def clean_mermaid_syntax(markdown: str) -> str:
+    """
+    Clean Mermaid diagram syntax to remove common errors.
+
+    Removes:
+    - Version directives (e.g., "mermaid version 11.12.1")
+    - Init directives (e.g., "%%{init: ...}%%")
+    - Malformed syntax
+
+    Args:
+        markdown: Raw markdown with potential Mermaid errors
+
+    Returns:
+        Cleaned markdown with valid Mermaid syntax
+    """
+    lines = markdown.split('\n')
+    cleaned_lines = []
+    in_mermaid_block = False
+
+    for line in lines:
+        # Detect start of mermaid block
+        if line.strip() == '```mermaid':
+            in_mermaid_block = True
+            cleaned_lines.append(line)
+            continue
+
+        # Detect end of mermaid block
+        if in_mermaid_block and line.strip() == '```':
+            in_mermaid_block = False
+            cleaned_lines.append(line)
+            continue
+
+        # Skip problematic lines inside mermaid blocks
+        if in_mermaid_block:
+            stripped = line.strip()
+
+            # Skip version directives
+            if 'version' in stripped.lower() and any(v in stripped for v in ['mermaid', 'v11', 'v10', '11.', '10.']):
+                continue
+
+            # Skip init directives
+            if stripped.startswith('%%{init:') or stripped.startswith('%%{{init:'):
+                continue
+
+            # Skip empty comment lines
+            if stripped == '%%':
+                continue
+
+        cleaned_lines.append(line)
+
+    return '\n'.join(cleaned_lines)
+
 def generate_lesson_markdown(
     llm,
     challenge_data: Dict[str, Any],
@@ -105,21 +157,21 @@ def generate_lesson_markdown(
             "tone": "friendly, encouraging, and patient",
             "language": "simple terms with clear explanations of technical jargon",
             "detail_level": "step-by-step with detailed explanations",
-            "analogies": "Use everyday analogies and metaphors to explain concepts",
+            "analogies": "Use analogies sparingly when they genuinely clarify a complex concept",
             "assumptions": "Assume minimal prior knowledge"
         },
         "Intermediate": {
             "tone": "professional and direct",
             "language": "standard technical terminology with brief clarifications",
             "detail_level": "focused on key concepts with practical context",
-            "analogies": "Use technical analogies when helpful",
+            "analogies": "Use analogies only when they add meaningful clarity",
             "assumptions": "Assume basic programming knowledge"
         },
         "Advanced": {
             "tone": "concise and technical",
             "language": "advanced technical terminology without over-explaining",
             "detail_level": "high-level overview with focus on nuances and edge cases",
-            "analogies": "Use system-level or architectural analogies",
+            "analogies": "Avoid analogies; focus on technical precision and implementation details",
             "assumptions": "Assume strong programming background"
         }
     }
@@ -199,7 +251,7 @@ LESSON STRUCTURE (Output in pure markdown):
 [1-2 paragraphs - Explain what this challenge is about and why it matters. Use {style['tone']} tone and {style['language']}.]
 
 ## The Core Idea
-[1-2 paragraphs - Connect it to real-world applications. Explain how this concept fits into the bigger picture in one clear analogy or model. Use {style['tone']} tone and {style['language']}.]
+[1-2 paragraphs - Connect it to real-world applications. Explain how this concept fits into the bigger picture. Focus on technical understanding; use {style['tone']} tone and {style['language']}. {style['analogies']}]
 
 ## Core Concepts — Component Breakdown (For CONCEPTUAL CHALLENGES ONLY - Dont mention this on the lesson)
 Break the main topic into its most important sub-concepts or components. This section is for explaining the "what" and "why" of the topic. Each component must:
@@ -278,6 +330,8 @@ CONSTRAINTS:
 - No excessive styling.
 - No oversized diagrams.
 - No multi-line explanations inside nodes.
+- **Do NOT include version directives** (e.g., `mermaid version 11.12.1`).
+- **Do NOT include** `%%{{init: ...}}%%` directives.
 
 OUTPUT RULES:
 - Output ONLY markdown
@@ -289,6 +343,9 @@ Begin the markdown lesson now:"""
 
     response = llm.invoke(prompt)
     lesson_markdown = response.content.strip()
+
+    # Clean Mermaid syntax to remove version directives and other errors
+    lesson_markdown = clean_mermaid_syntax(lesson_markdown)
 
     return lesson_markdown
 

@@ -283,7 +283,17 @@ def create_challenge_workflow(checkpointer_db_path: str = "challenge_sessions.db
 
     import sqlite3
     conn = sqlite3.connect(checkpointer_db_path, check_same_thread=False)
+    # Disable WAL mode and use exclusive locking to avoid creating -shm and -wal files
+    conn.execute("PRAGMA locking_mode=EXCLUSIVE")
+    conn.execute("PRAGMA journal_mode=DELETE")
+    conn.commit()
     checkpointer = SqliteSaver(conn)
+    # Call setup to initialize tables
+    checkpointer.setup()
+    # Ensure settings persist after setup
+    conn.execute("PRAGMA locking_mode=EXCLUSIVE")
+    conn.execute("PRAGMA journal_mode=DELETE")
+    conn.commit()
 
     app = workflow.compile(
         checkpointer=checkpointer,

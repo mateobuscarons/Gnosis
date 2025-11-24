@@ -23,6 +23,7 @@ else:
     print("📚 Using STANDARD Learning Path Agent")
 
 from agents.module_planner_agent import ModulePlannerAgent
+from agents.tutor_agent import clean_mermaid_syntax
 
 from database.db_operations import Database
 
@@ -197,7 +198,10 @@ def setup(request: SetupRequest):
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid experience level: {request.experience_level}")
+        if "Invalid experience level" in str(e) or "is not a valid ExperienceLevel" in str(e):
+             raise HTTPException(status_code=400, detail=f"Invalid experience level: {request.experience_level}")
+        print(f"❌ Setup failed (ValueError): {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Setup failed: {str(e)}")
     except Exception as e:
         print(f"❌ Setup failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Setup failed: {str(e)}")
@@ -321,8 +325,9 @@ def get_challenge(module_number: int, challenge_number: int):
         if progress and progress.get("lesson_markdown") and progress.get("coding_challenge_json"):
             elapsed = time.time() - start_time
             print(f"✅ Challenge loaded from cache in {elapsed:.1f}s")
+            cleaned_lesson = clean_mermaid_syntax(progress["lesson_markdown"])
             return {
-                "lesson_markdown": progress["lesson_markdown"],
+                "lesson_markdown": cleaned_lesson,
                 "coding_challenge": progress["coding_challenge"],
                 "challenge_data": challenge_data,
                 "progress": {
@@ -382,9 +387,10 @@ def get_challenge(module_number: int, challenge_number: int):
 
         elapsed = time.time() - start_time
         print(f"✅ Challenge generated and cached in {elapsed:.1f}s total")
+        cleaned_lesson = clean_mermaid_syntax(state_values["lesson_markdown"])
 
         return {
-            "lesson_markdown": state_values["lesson_markdown"],
+            "lesson_markdown": cleaned_lesson,
             "coding_challenge": state_values["coding_challenge"],
             "challenge_data": challenge_data,
             "progress": {
@@ -523,7 +529,6 @@ def get_progress():
                 "completed": progress_item["status"] == "completed"
             }
 
-        # Add individual challenge status to each module in summary
         for module in summary["modules"]:
             module_num = module["module_number"]
             module["challenge_details"] = module_details.get(module_num, {})
