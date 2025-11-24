@@ -1,0 +1,558 @@
+.challenge-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f5f5f5;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container h2 {
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 22px;
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 15px;
+}
+
+.challenge-header {
+  background: white;
+  padding: 20px 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.back-button {
+  background-color: #6c757d;
+  margin-bottom: 12px;
+}
+
+.back-button:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.challenge-header h1 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.challenge-title {
+  color: #666;
+  font-size: 16px;
+}
+
+.challenge-content {
+  padding: 0 40px 40px;
+  width: 100%;
+}
+
+/* Lesson Full Screen View */
+.lesson-fullscreen {
+  background: white;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+/* Challenge Full Screen View */
+.challenge-fullscreen {
+  background: white;
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.lesson-content {
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.lesson-content p {
+  margin: 0 0 16px 0;
+  line-height: 1.8;
+}
+
+.start-challenge-button {
+  width: 100%;
+  padding: 16px 32px;
+  font-size: 18px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin-top: 20px;
+}
+
+.start-challenge-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.lesson-content h1, .lesson-content h2, .lesson-content h3 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* Inline code - keep it inline and subtle */
+.lesson-content code {
+  display: inline;
+  background-color: #f4f4f4;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #d63384;
+  white-space: nowrap;
+  margin: 0;
+  line-height: inherit;
+}
+
+/* Code blocks - full syntax highlighting */
+.lesson-content pre {
+  display: block;
+  background-color: #1e1e1e;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.lesson-content pre code {
+  display: block;
+  background-color: transparent;
+  padding: 0;
+  color: #f8f8f2;
+  white-space: pre;
+  font-size: 14px;
+}
+
+/* Syntax highlighter overrides */
+.lesson-content pre > div {
+  margin: 0 !important;
+  border-radius: 6px;
+}
+
+.lesson-content pre code[class*="language-"] {
+  background: transparent;
+  text-shadow: none;
+}
+
+.lesson-content ul, .lesson-content ol {
+  margin-left: 24px;
+  margin-bottom: 16px;
+}
+
+.lesson-content li {
+  margin-bottom: 8px;
+}
+
+/* Tables in lesson content */
+.lesson-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lesson-content thead {
+  background-color: #667eea;
+  color: white;
+}
+
+.lesson-content th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.lesson-content td {
+  padding: 12px 16px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.lesson-content tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.lesson-content tbody tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+.lesson-content tbody tr:nth-child(even):hover {
+  background-color: #f8f9fa;
+}
+
+/* Mermaid diagrams styling */
+.lesson-content .mermaid,
+.challenge-prompt .mermaid,
+.remediation-content .mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+  padding: 20px;
+  background-color: #fafbfc;
+  border-radius: 8px;
+  border: 1px solid #e1e4e8;
+  overflow-x: auto;
+}
+
+.lesson-content .mermaid svg,
+.challenge-prompt .mermaid svg,
+.remediation-content .mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.challenge-prompt {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #667eea;
+}
+
+.challenge-prompt h3 {
+  color: #667eea;
+  margin-bottom: 12px;
+}
+
+.challenge-prompt p {
+  color: #333;
+  line-height: 1.6;
+}
+
+.challenge-prompt pre {
+  background-color: #1e1e1e;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.challenge-prompt pre > div {
+  margin: 0 !important;
+  border-radius: 6px;
+}
+
+/* Inline code in challenge prompts */
+.challenge-prompt code:not(pre code) {
+  display: inline;
+  background-color: #f4f4f4;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #d63384;
+  white-space: nowrap;
+  margin: 0;
+  line-height: inherit;
+}
+
+/* Lists in challenge prompt - fix indentation */
+.challenge-prompt ul,
+.challenge-prompt ol {
+  margin-left: 24px;
+  margin-bottom: 16px;
+  padding-left: 0;
+}
+
+.challenge-prompt li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+/* Tables in challenge prompt */
+.challenge-prompt table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.challenge-prompt thead {
+  background-color: #667eea;
+  color: white;
+}
+
+.challenge-prompt th {
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.challenge-prompt td {
+  padding: 10px 14px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.challenge-prompt tbody tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+.code-editor {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* Conceptual Input - User-friendly text area */
+.conceptual-input {
+  width: 100%;
+  padding: 20px;
+  font-size: 16px;
+  line-height: 1.8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  color: #333;
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 400px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.conceptual-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.conceptual-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.challenge-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.back-to-lesson-button {
+  flex: 0 0 auto;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-to-lesson-button:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
+
+.submit-button {
+  flex: 1;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success-message {
+  background: #d4edda;
+  border-left: 4px solid #28a745;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.success-message h3 {
+  color: #155724;
+  margin-bottom: 12px;
+}
+
+.next-info {
+  margin-top: 8px;
+  color: #155724;
+  font-weight: 600;
+}
+
+.remediation {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 20px;
+}
+
+.remediation h3 {
+  color: #856404;
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.remediation p {
+  color: #333;
+  line-height: 1.8;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.remediation-content {
+  color: #333;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.remediation-content p {
+  margin-bottom: 12px;
+}
+
+/* Inline code in remediation */
+.remediation-content code {
+  display: inline;
+  background-color: #f4f4f4;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #d63384;
+  white-space: nowrap;
+  margin: 0;
+  line-height: inherit;
+}
+
+.remediation-content pre {
+  background-color: #1e1e1e;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.remediation-content pre > div {
+  margin: 0 !important;
+  border-radius: 6px;
+}
+
+.remediation-content pre code {
+  display: block;
+  background-color: transparent;
+  padding: 0;
+  color: #f8f8f2;
+  white-space: pre;
+  font-size: 14px;
+}
+
+.remediation-content strong {
+  font-weight: 600;
+  color: #856404;
+}
+
+.remediation .encouragement {
+  color: #28a745;
+  font-style: italic;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.remediation .concept-reminder {
+  color: #666;
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .challenge-content {
+    padding: 0 20px 20px;
+  }
+
+  .lesson-fullscreen,
+  .challenge-fullscreen {
+    padding: 20px;
+  }
+
+  .code-editor {
+    margin-bottom: 16px;
+  }
+
+  .challenge-actions {
+    flex-direction: column;
+  }
+
+  .back-to-lesson-button {
+    width: 100%;
+  }
+}
