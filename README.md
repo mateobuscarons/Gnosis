@@ -1,6 +1,6 @@
-# Adaptive Learning OS
+# Gnosis
 
-An AI-powered adaptive learning platform that generates personalized technical learning paths through a multi-agent system. Built with LangGraph orchestration, powered by Groq (Llama 3.3 70B & Kimi K2), with optional Google Gemini and Tavily web search integration.
+An AI-powered adaptive learning platform that generates personalized technical learning paths through a multi-agent system. Built with LangGraph orchestration, powered by Groq (Llama 3.3 70B & Kimi K2), with optional Tavily web search integration.
 
 ## Overview
 
@@ -22,7 +22,6 @@ Transforms any technical learning goal into a structured curriculum with interac
 - LangGraph - Agent orchestration with checkpointing
 - LangChain - LLM framework
 - Groq (Llama 3.3 70B, Kimi K2) - Primary LLMs
-- Google Gemini - Optional (for enhanced path generation)
 - Tavily - Optional web search
 - SQLite - Dual database (app data + checkpoints)
 
@@ -36,7 +35,7 @@ Transforms any technical learning goal into a structured curriculum with interac
 **Planning Agents:**
 1. **Learning Path Agent** (`learning_path_agent.py`) - Generates 2-6 module curriculum
    - Standard mode: Pure LLM reasoning
-   - Enhanced mode: Tavily web search + Gemini synthesis (optional)
+   - Enhanced mode: Tavily web search
 2. **Module Planner Agent** (`module_planner_agent.py`) - Creates 5-8 micro-challenges per module
 
 **Challenge Workflow Agents:** (`challenge_evaluation_agents.py`)
@@ -90,8 +89,7 @@ User submits code → Evaluator Agent → Pass? → Next challenge
 ### Prerequisites
 - Python 3.10+
 - Node.js 16+
-- Groq API Key ([Get here](https://console.groq.com))
-- Optional: Google Gemini API Key (for enhanced mode)
+- Groq API Key
 - Optional: Tavily API Key (for web search)
 
 ### Backend
@@ -101,7 +99,6 @@ pip install -r requirements.txt
 
 # Create .env file
 GROQ_API_KEY=your_groq_key
-GOOGLE_API_KEY=your_gemini_key  # Optional
 TAVILY_API_KEY=your_tavily_key  # Optional
 
 # Run server
@@ -112,54 +109,11 @@ python app.py  # http://localhost:8000
 ```bash
 cd frontend
 npm install
-npm run dev  # http://localhost:5173
+npm run dev
 ```
 
 ### Toggle Enhanced Mode
-In `app.py`, set `USE_ENHANCED_LEARNING_PATH = True` to enable web search (requires Gemini + Tavily keys)
-
-## API Endpoints
-
-**Setup Flow:**
-- `POST /setup` - Generate learning path (body: `{goal, experience_level}`)
-- `POST /path/approve` - Generate all module challenges
-
-**Challenge Flow:**
-- `GET /challenge/{m}/{c}` - Get lesson + challenge content
-- `POST /challenge/{m}/{c}/submit` - Submit solution (body: `{user_code}`)
-
-**Progress Tracking:**
-- `GET /session` - User session state
-- `GET /progress` - Module completion summary
-- `GET /challenges/metadata` - All challenge titles
-
-**Utility:**
-- `DELETE /reset` - Clear all data (testing only)
-
-Full API docs: `http://localhost:8000/docs` or see `documentation/BACKEND.md`
-
-## Key Design Choices
-
-**LLM-Based Evaluation (No Execution)**
-- Works for code + conceptual challenges
-- No sandboxing needed, accepts multiple valid approaches
-- Trade-off: Cannot verify runtime behavior
-
-**Multi-Agent Architecture**
-- Separation of concerns for easier debugging
-- Specialized prompts per task
-- Modular, extensible design
-
-**Dual Database Strategy**
-- `learning_system.db` - Persistent user data
-- `challenge_sessions.db` - LangGraph checkpoints (clearable)
-
-## Limitations
-
-- Single user MVP (no authentication)
-- No code execution (LLM evaluation only)
-- English only
-- Rate limits on free API tiers
+In `app.py`, set `USE_ENHANCED_LEARNING_PATH = True` to enable web search (Tavily keys)
 
 ## Project Structure
 
@@ -189,13 +143,3 @@ Full API docs: `http://localhost:8000/docs` or see `documentation/BACKEND.md`
 └── README.md
 ```
 
-## Tech Notes
-
-- **LLM Provider Flexibility**: Easily swap between Groq, Gemini, or add new providers in agent files
-- **Checkpointing**: Full LangGraph state persistence allows resuming interrupted workflows
-- **Caching**: Lessons and challenges cached in DB to avoid regeneration
-- **Rate Limiting**: Built-in delays and retries for API quota management
-
----
-
-**Built with LangGraph + Groq + Llama 3.3 | 6 AI Agents | Multi-Agent Learning System**
