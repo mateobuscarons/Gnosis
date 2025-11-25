@@ -282,17 +282,21 @@ def create_challenge_workflow(checkpointer_db_path: str = "challenge_sessions.db
     workflow.add_edge("remediation_agent", "await_code")
 
     import sqlite3
-    conn = sqlite3.connect(checkpointer_db_path, check_same_thread=False)
-    # Disable WAL mode and use exclusive locking to avoid creating -shm and -wal files
-    conn.execute("PRAGMA locking_mode=EXCLUSIVE")
-    conn.execute("PRAGMA journal_mode=DELETE")
+    conn = sqlite3.connect(
+        checkpointer_db_path,
+        check_same_thread=False,
+        timeout=30.0  # Wait up to 30 seconds for locks
+    )
+    # Enable WAL mode for better concurrency
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA synchronous=NORMAL")  # Faster writes while still safe
+    conn.execute("PRAGMA busy_timeout=30000")  # 30 second timeout in milliseconds
     conn.commit()
     checkpointer = SqliteSaver(conn)
     # Call setup to initialize tables
     checkpointer.setup()
-    # Ensure settings persist after setup
-    conn.execute("PRAGMA locking_mode=EXCLUSIVE")
-    conn.execute("PRAGMA journal_mode=DELETE")
+    # Ensure WAL mode persists after setup
+    conn.execute("PRAGMA journal_mode=WAL")
     conn.commit()
 
     app = workflow.compile(

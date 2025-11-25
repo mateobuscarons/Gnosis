@@ -33,8 +33,15 @@ class Database:
 
     def _get_connection(self) -> sqlite3.Connection:
         """Get database connection with row factory"""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(
+            self.db_path,
+            timeout=30.0,  # Wait up to 30 seconds for locks
+            isolation_level='IMMEDIATE'  # Acquire locks immediately to prevent conflicts
+        )
         conn.row_factory = sqlite3.Row
+        # Enable WAL mode for better concurrency
+        conn.execute('PRAGMA journal_mode=WAL')
+        conn.execute('PRAGMA synchronous=NORMAL')  # Faster writes while still safe
         return conn
 
     def create_user_profile(self, learning_goal: str, experience_level: str) -> int:

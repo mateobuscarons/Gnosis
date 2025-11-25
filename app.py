@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 
-USE_ENHANCED_LEARNING_PATH = False  
+USE_ENHANCED_LEARNING_PATH = True  
 # Change this to True for web search capabilities
 # Can only be done once a day MAX
 
